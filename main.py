@@ -7,10 +7,33 @@ Created on Sat Jan 16 00:12:46 2021
 
 
 
+"""
+Loose groups and teams for the project
+
+1. GUI (tkinter)
+2. Graphs, stats and data-analysis (statitstics and matplotlib for graphs)
+3. AI and predictive analysis (tensorflow and scikit)
+
+"""
+
+
+
 import numpy as np
 import pandas as pd
+from tkinter import *
 from datetime import datetime
 import statistics
+
+
+root = Tk()
+
+
+
+root.mainloop()
+
+
+
+#Initialize file and convert it into data-frame
 
 fold = "C:\\Users\\User\\Documents\\Xingming\\UW\\Projects\\HTN\\"
     ## replace with your own folder
