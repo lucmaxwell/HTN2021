@@ -26,25 +26,29 @@ root.resizable(True, True)
 root.title("Stock tracker")
 root.configure(bg = "#a2a2a2")
 
+class date:
+    def __init__(self, colData):
+        date, self.open, self.high, self.low, self.close, self.adjClose, self.volume = colData
+        self.year, self.month, self.day = date.split('-')
+        
 
-data = ""
 # Reading the data files (format Datasets\File.csv)
 def acceptFile(fileName):
     try:
         data = pd.read_csv(fileName)
-    except Exception as e:
+        return data
+    except Exception:
         messagebox.showerror(title = "Invalid file", message = "Please ensure file is in current working directory and the correct name was entered!")
-        print(e)
+
 
 # Finding the corresponding data file for the current ticker + time period
 def searchTicker():
     ticker = fileInput.get()
-    time = optionList.get()
-    try:
-       acceptFile("Datasets\\" + ticker.upper() + "_" + time + ".csv")
-    except Exception as e:
-        messagebox.showerror(title="Invalid file", message="Please ensure file is in current working directory and the correct name was entered!")
-        print(e)
+    data = acceptFile('SPY_max.csv').transpose() # change to ticker at the end. Changed to  for testing
+    dateObj = []
+    for colNum, colData in data.iteritems():
+        obj = date(colData)
+        dateObj.append(obj)
 
 
 
