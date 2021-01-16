@@ -25,12 +25,11 @@ from datetime import datetime
 import statistics
 
 root = tk.Tk()
-root.iconbitmap(r'stock.png')
+root.iconbitmap(r'icon.ico')
 root.geometry("500x500")
 root.resizable(True, True)
 root.title("Stock tracker")
 root.configure(bg = "#cdcdcd")
-
 
 
 root.mainloop()
