@@ -12,12 +12,14 @@ Different teams for the project (see discord for the rest of the information)
 import pandas as pd
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 from datetime import datetime
 import statistics
+#from matplotlib import pyplot
 
 # Windows settings
 root = tk.Tk()
-root.iconbitmap(r'icon.ico')
+#root.iconbitmap(r'icon.ico')
 root.geometry("600x500")
 root.resizable(True, True)
 root.title("Stock tracker")
@@ -25,7 +27,6 @@ root.configure(bg = "#a2a2a2")
 
 
 data = ""
-
 # Reading the data files (format Datasets\File.csv)
 def acceptFile(fileName):
     try:
@@ -47,8 +48,8 @@ def searchTicker():
 
 
 # Frames for organization
-topFrame = tk.Frame(master=root)
-bodyFrame = tk.Frame(master=root)
+topFrame = tk.Frame(master = root)
+bodyFrame = tk.Frame(master = root)
 
 # Text box for stock ticker
 # TODO implement smart search of ticker to generate file
@@ -65,7 +66,7 @@ timePeriod.grid(row = 0, column = 1)
 
 
 # Button to commence search for data
-fileAccept = tk.Button(master=topFrame, text = "Submit", font = "TkDefault 10", command = searchTicker)
+fileAccept = tk.Button(master = topFrame, text = "Submit", font = "TkDefault 10", command = searchTicker)
 fileAccept.grid(row = 0, column = 2)
 
 
@@ -73,5 +74,4 @@ topFrame.pack()
 bodyFrame.pack()
 
 root.mainloop()
-
 
