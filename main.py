@@ -8,11 +8,12 @@ Different teams for the project (see discord for the rest of the information)
 """
 
 
-#import numpy as np
+import numpy as np
 import pandas as pd
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
+from matplotlib import pyplot as pp
 from datetime import datetime
 import statistics
 #from matplotlib import pyplot
@@ -75,3 +76,35 @@ bodyFrame.pack()
 
 root.mainloop()
 
+
+
+
+# Temporary definition of Day class
+class Day:
+    def __init__(self, day, month, year, open, high, low, close, volume):
+        self.day = day
+        self.month = month
+        self.year = year
+        self.open = open
+        self.high = high
+        self.low = low
+        self.close = close
+        self.volume = volume
+        self.date = "" + day + "/" + month + "/" + year
+
+
+# Temporary place for graphing utility
+# scope is a listof Day
+def graphData(scope):
+    x_values = []
+    y_values = []
+
+    for i in scope:
+        x_values.append(i.date)     # open price
+        y_values.append(i.open)
+
+        x_values.append(i.date)     # close price
+        y_values.append(i.close)
+
+    pp.plot(x_values, y_values)
+    pp.show()
