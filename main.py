@@ -238,8 +238,9 @@ def model_deep(data, date):
     predict["Adj Close"] = model.predict(predict)
     predict = predict[data.columns]
     prediction = scaler.inverse_transform(predict)
+    value = prediction["Adj Close"]
     
-    return prediction, predict, history_df
+    return value, prediction, predict, history_df
      
     
 def linear_reg(data, date):
@@ -255,7 +256,7 @@ def linear_reg(data, date):
     X_train, y_train,
     validation_data=(X_valid, y_valid),
     batch_size=64,
-    epochs=100,
+    epochs=20,
     verbose=0,
     )
     
@@ -267,10 +268,9 @@ def linear_reg(data, date):
     predict["Adj Close"] = model.predict(predict)
     predict = predict[data.columns]
     prediction = scaler.inverse_transform(predict)
+    print(type(prediction))
+    value = prediction[0][5]
     
-    return prediction, predict, history_df
-
-
-
+    return value, prediction, predict, history_df
 
 
