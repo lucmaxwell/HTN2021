@@ -166,34 +166,46 @@ bodyFrame.pack()
 root.mainloop()
 
 
+
+def dtf(data):
+    for i in range(data.shape[0]):
+        now = datetime.strptime(data["Date"][i], "%Y-%m-%d")
+        data["Date"][i] = float(datetime.timestamp(now))
+    return data
+
 def some_prep(data):
     new_data = data[["Date", "Adj Close"]].shift(-1)
     new_data[['Open', 'High', 'Low', 'Close', 'Volume']] =  data[
         ['Open', 'High', 'Low', 'Close', 'Volume']]
+    new_data = new_data[data.columns]
     to_predict = new_data.iloc[-1:]
+    new_data = new_data.iloc[:-1]
     return new_data, to_predict
     
     
 def get_data(data):
+    data = dtf(data)
     val_size = data.shape[0]
-    val_size = 2112
-    train_size = 4931
-    data = data.drop("Date", axis = 1)
+    train_size = data.shape[1]
+    val_size = round(train_size * 0.3)
+    train_size = train_size - val_size
     cols = data.columns
     scaler = MinMaxScaler(feature_range=(0, 1)) 
+    data = data[data.columns]
     data = pd.DataFrame(scaler.fit_transform(data), columns = cols)
+    data, to_predict = some_prep(data)
+    data = data[data.columns]
     data_x = (data.copy()).drop("Adj Close", axis = 1)
     data_y = data["Adj Close"]
     X_train = data_x.iloc[:train_size]
     X_val = data_x.iloc[val_size:]
     Y_train =  data_y.iloc[:train_size]
     Y_val = data_y.iloc[val_size:]
-    return X_train, X_val, Y_train, Y_val
-
-
-def model_deep(data):
+    return X_train, X_val, Y_train, Y_val, to_predict, scaler
+    
+def model_deep(data, date):
     # normalize the dataset 
-    X_train, X_valid, y_train, y_valid = get_data(data)
+    X_train, X_valid, y_train, y_valid, predict, scaler = get_data(data)
     input_shape = [data.shape[1] - 1]
     model = keras.Sequential([
     layers.BatchNormalization(input_shape=input_shape),
@@ -208,7 +220,7 @@ def model_deep(data):
     model.compile(
     optimizer='sgd',
     loss='mae',
-    metrics=['mae'],
+    metrics=['mae']
     )
     EPOCHS = 100
     history = model.fit(
@@ -220,19 +232,45 @@ def model_deep(data):
         )
 
     history_df = pd.DataFrame(history.history)
-    return history_df
+    predict["Date"] = 1.002
+    print(predict)
+    predict = predict.drop("Adj Close", axis = 1)
+    predict["Adj Close"] = model.predict(predict)
+    predict = predict[data.columns]
+    prediction = scaler.inverse_transform(predict)
     
+    return prediction, predict, history_df
+     
     
-def linear_reg(data):
+def linear_reg(data, date):
+    X_train, X_valid, y_train, y_valid, predict, scaler = get_data(data)
     input_shape = [data.shape[1] - 1]
-    data_x = data["Date"]
-    data_y = data["Adj Close"]
-    model = keras.Sequential([layers.Dense(units=1, input_shape = [6])])
-    model(data_x)
-    weights = model.get_weights()
-    return weights
+    model = keras.Sequential([layers.Dense(units=1, input_shape = input_shape)])
+    model.compile(
+    optimizer='adam',
+    loss='mae',
+    metrics=['mae']
+    )
+    history = model.fit(
+    X_train, y_train,
+    validation_data=(X_valid, y_valid),
+    batch_size=64,
+    epochs=100,
+    verbose=0,
+    )
     
-#df['Date'] = pd.to_datetime(df.Date,format='%Y-%m-%d')
+    history_df = pd.DataFrame(history.history)
+    predict["Date"] = 1.002
+
+    print(predict)
+    predict = predict.drop("Adj Close", axis = 1)
+    predict["Adj Close"] = model.predict(predict)
+    predict = predict[data.columns]
+    prediction = scaler.inverse_transform(predict)
+    
+    return prediction, predict, history_df
+
+
 
 
 
