@@ -170,7 +170,7 @@ root.mainloop()
 def dtf(data):
     for i in range(data.shape[0]):
         now = datetime.strptime(data["Date"][i], "%Y-%m-%d")
-        data["Date"][i] = float(datetime.timestamp(now))
+        data.at[i, "Date"] = float(datetime.timestamp(now))
     return data
 
 def some_prep(data):
