@@ -27,7 +27,7 @@ from sklearn.linear_model import LinearRegression
 
 # Windows settings
 root = tk.Tk()
-#root.iconbitmap(r'icon.ico')
+root.iconbitmap(r'icon.ico')
 root.geometry("600x500")
 root.resizable(True, True)
 root.title("Stock tracker")
@@ -87,8 +87,20 @@ def searchTicker():
 
 
 # Frames for organization
+instructionFrame = tk.Frame(master = root)
 topFrame = tk.Frame(master = root)
 bodyFrame = tk.Frame(master = root)
+
+# User instructions
+instructions = tk.Label(
+    master = instructionFrame,
+    text = "1. Select timeframe of prices.\n2. Click Submit.\n3. Produce results!",
+    font = 'TkDefault 16',
+    foreground = 'white',
+    background = '#303030'
+    )
+instructions.grid(row=0, column = 0)
+instructionFrame.pack()
 
 # Text box for stock ticker
 fileInput = tk.Entry(master = topFrame, width = 55, bd = 2, justify = "left", font = "TkDefault 10")
@@ -106,7 +118,33 @@ timePeriod.grid(row = 0, column = 1)
 fileAccept = tk.Button(master = topFrame, text = "Submit", font = "TkDefault 10", command = searchTicker)
 fileAccept.grid(row = 0, column = 2)
 
-topFrame.pack()
+# Immediate Predictions - ADDED
+result1 = tk.Label(
+    master = bodyFrame,
+    text = "Price is going: [UP/DOWN]\n",
+    font = 'TkDefault 16',
+    foreground = 'white',
+    background = '#303030'
+    )
+result1.grid(row = 2, column = 0)
+result2 = tk.Label(
+    master = bodyFrame,
+    text = "Predicted Price: ",
+    font = 'TkDefault 12',
+    foreground = 'white',
+    background = '#303030'
+    )
+result2.grid(row = 3, column = 0)
+result3 = tk.Label(
+    master = bodyFrame,
+    text = "Percent change from yesterday: ",
+    font = 'TkDefault 12',
+    foreground = 'white',
+    background = '#303030'
+    )
+result3.grid(row = 4, column = 0)
+bodyFrame.pack()
+
 
 # Random data to add to the GUI
 data1 = {'Year': [1993,1994,1995,1996,1997,1998,1999,2000],
