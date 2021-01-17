@@ -14,6 +14,16 @@ from matplotlib import pyplot as pp
 from datetime import datetime, date, timedelta
 import statistics
 from dateutil.relativedelta import relativedelta
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import tensorflow as tf
+from tensorflow import keras
+from sklearn import preprocessing
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras import layers
+from tensorflow.keras import callbacks
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
 
 # Windows settings
 root = tk.Tk()
@@ -97,9 +107,104 @@ fileAccept = tk.Button(master = topFrame, text = "Submit", font = "TkDefault 10"
 fileAccept.grid(row = 0, column = 2)
 
 topFrame.pack()
+
+#random data to add to the GUI
+data1 = {'Year': [1993,1994,1995,1996,1997,1998,1999,2000],
+         'Opening_Price': [41,42,43,44,45,46,47,48.]
+        }  
+df1 = pd.DataFrame(data1,columns=['Year','Opening_Price'])
+
+#adds the graph to the GUI (under the topFrame and bodyFrame)
+figure1 = pp.Figure(figsize=(4,4), dpi=100)
+ax1 = figure1.add_subplot(111) # 111 represents how much of the whitespace that the graph fills
+line1 = FigureCanvasTkAgg(figure1, root)
+line1.get_tk_widget().pack(fill=tk.BOTH)
+df1 = df1[['Year','Opening_Price']].groupby('Year').sum()
+df1.plot(kind='line', legend=True, ax=ax1, color='r',marker='o', fontsize=10)
+ax1.set_title('Year Vs. Opening_Price')
+
 bodyFrame.pack()
 
 root.mainloop()
+
+
+
+
+
+
+
+def some_prep(data):
+    new_data = data[["Date", "Adj Close"]].shift(-1)
+    new_data[['Open', 'High', 'Low', 'Close', 'Volume']] =  data[
+        ['Open', 'High', 'Low', 'Close', 'Volume']]
+    to_predict = new_data.iloc[-1:]
+    return new_data, to_predict
+    
+    
+def get_data(data):
+    val_size = data.shape[0]
+    val_size = 2112
+    train_size = 4931
+    data = data.drop("Date", axis = 1)
+    cols = data.columns
+    scaler = MinMaxScaler(feature_range=(0, 1)) 
+    data = pd.DataFrame(scaler.fit_transform(data), columns = cols)
+    data_x = (data.copy()).drop("Adj Close", axis = 1)
+    data_y = data["Adj Close"]
+    X_train = data_x.iloc[:train_size]
+    X_val = data_x.iloc[val_size:]
+    Y_train =  data_y.iloc[:train_size]
+    Y_val = data_y.iloc[val_size:]
+    return X_train, X_val, Y_train, Y_val
+    
+def model_deep(data):
+    # normalize the dataset 
+    X_train, X_valid, y_train, y_valid = get_data(data)
+    input_shape = [data.shape[1] - 1]
+    model = keras.Sequential([
+    layers.BatchNormalization(input_shape=input_shape),
+    layers.Dense(512, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Dense(512, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Dense(512, activation='relu'),
+    layers.BatchNormalization(),
+    layers.Dense(1),
+    ])
+    model.compile(
+    optimizer='sgd',
+    loss='mae',
+    metrics=['mae'],
+    )
+    EPOCHS = 100
+    history = model.fit(
+        X_train, y_train,
+        validation_data=(X_valid, y_valid),
+        batch_size=64,
+        epochs=EPOCHS,
+        verbose=0,
+        )
+
+    history_df = pd.DataFrame(history.history)
+    return history_df
+    
+    
+def linear_reg(data):
+    input_shape = [data.shape[1] - 1]
+    data_x = data["Date"]
+    data_y = data["Adj Close"]
+    model = keras.Sequential([layers.Dense(units=1, input_shape = [6])])
+    model(data_x)
+    weights = model.get_weights()
+    return weights
+    
+#df['Date'] = pd.to_datetime(df.Date,format='%Y-%m-%d')
+
+
+
+
+
+
 
 """
 # Temporary place for graphing utility
@@ -118,3 +223,6 @@ def graphData(scope):
     pp.plot(x_values, y_values)
     pp.show()
 """
+
+
+
