@@ -206,7 +206,7 @@ def get_data(data):
     
 def model_deep(data, date):
     # normalize the dataset 
-    X_train, X_valid, y_train, y_valid, predict, scaler = get_data(data)
+    X_train, X_valid, y_train, y_valid, to_predict, scaler = get_data(data)
     input_shape = [data.shape[1] - 1]
     model = keras.Sequential([
     layers.BatchNormalization(input_shape=input_shape),
@@ -233,20 +233,26 @@ def model_deep(data, date):
         )
 
     history_df = pd.DataFrame(history.history)
-    predict["Date"] = 1.002
+    to_predict["Date"] = 1.002
 
-    predict = predict.drop("Adj Close", axis = 1)
-    predict["Adj Close"] = model.predict(predict)
-    predict = predict[data.columns]
-    prediction = scaler.inverse_transform(predict)
+    to_predict = to_predict.drop("Adj Close", axis = 1)
+    @tf.function(experimental_relax_shapes=True)
+    def predict(x):
+     return model(x)
+    to_predict["Adj Close"] = predict(to_predict)
+    to_predict = to_predict[data.columns]
+    to_predict["Adj Close"][7042] = tf.cast((to_predict["Adj Close"][7042])[0], float)
+    prediction = scaler.inverse_transform(to_predict)
+
     value = prediction[0][5]
+    history_df.loc[:, ['loss', 'val_loss']].plot()
     
     return value, prediction, history_df
      
     
     
 def linear_reg(data, date):
-    X_train, X_valid, y_train, y_valid, predict, scaler = get_data(data)
+    X_train, X_valid, y_train, y_valid, to_predict, scaler = get_data(data)
     input_shape = [data.shape[1] - 1]
     model = keras.Sequential([
         layers.BatchNormalization(input_shape=input_shape),
@@ -267,13 +273,16 @@ def linear_reg(data, date):
     )
     
     history_df = pd.DataFrame(history.history)
-    predict["Date"] = 1.002
+    to_predict["Date"] = 1.002
 
-
-    predict = predict.drop("Adj Close", axis = 1)
-    predict["Adj Close"] = model.predict(predict)
-    predict = predict[data.columns]
-    prediction = scaler.inverse_transform(predict)
+    to_predict = to_predict.drop("Adj Close", axis = 1)
+    @tf.function(experimental_relax_shapes=True)
+    def predict(x):
+     return model(x)
+    to_predict["Adj Close"] = predict(to_predict)
+    to_predict = to_predict[data.columns]
+    to_predict["Adj Close"][7042] = tf.cast((to_predict["Adj Close"][7042])[0], float)
+    prediction = scaler.inverse_transform(to_predict)
 
     value = prediction[0][5]
     history_df.loc[:, ['loss', 'val_loss']].plot()
