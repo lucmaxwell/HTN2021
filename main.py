@@ -14,6 +14,7 @@ from matplotlib import pyplot as pp
 from datetime import datetime, date, timedelta
 import statistics
 from dateutil.relativedelta import relativedelta
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # Windows settings
 root = tk.Tk()
@@ -97,6 +98,22 @@ fileAccept = tk.Button(master = topFrame, text = "Submit", font = "TkDefault 10"
 fileAccept.grid(row = 0, column = 2)
 
 topFrame.pack()
+
+#random data to add to the GUI
+data1 = {'Year': [1993,1994,1995,1996,1997,1998,1999,2000],
+         'Opening_Price': [41,42,43,44,45,46,47,48.]
+        }  
+df1 = pd.DataFrame(data1,columns=['Year','Opening_Price'])
+
+#adds the graph to the GUI (under the topFrame and bodyFrame)
+figure1 = pp.Figure(figsize=(4,4), dpi=100)
+ax1 = figure1.add_subplot(111) # 111 represents how much of the whitespace that the graph fills
+line1 = FigureCanvasTkAgg(figure1, root)
+line1.get_tk_widget().pack(fill=tk.BOTH)
+df1 = df1[['Year','Opening_Price']].groupby('Year').sum()
+df1.plot(kind='line', legend=True, ax=ax1, color='r',marker='o', fontsize=10)
+ax1.set_title('Year Vs. Opening_Price')
+
 bodyFrame.pack()
 
 root.mainloop()
