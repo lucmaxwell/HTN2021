@@ -50,7 +50,6 @@ def searchTicker():
         dateObj.append(obj)
 
 
-
 # Frames for organization
 topFrame = tk.Frame(master = root)
 bodyFrame = tk.Frame(master = root)
