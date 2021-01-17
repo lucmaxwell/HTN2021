@@ -233,12 +233,12 @@ def model_deep(data, date):
 
     history_df = pd.DataFrame(history.history)
     predict["Date"] = 1.002
-    print(predict)
+
     predict = predict.drop("Adj Close", axis = 1)
     predict["Adj Close"] = model.predict(predict)
     predict = predict[data.columns]
     prediction = scaler.inverse_transform(predict)
-    value = prediction["Adj Close"]
+    value = prediction[0][5]
     
     return value, prediction, predict, history_df
      
@@ -263,12 +263,12 @@ def linear_reg(data, date):
     history_df = pd.DataFrame(history.history)
     predict["Date"] = 1.002
 
-    print(predict)
+
     predict = predict.drop("Adj Close", axis = 1)
     predict["Adj Close"] = model.predict(predict)
     predict = predict[data.columns]
     prediction = scaler.inverse_transform(predict)
-    print(type(prediction))
+
     value = prediction[0][5]
     
     return value, prediction, predict, history_df
