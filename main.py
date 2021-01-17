@@ -1,10 +1,8 @@
 """
 Different teams for the project (see discord for the rest of the information)
-
 1. GUI (tkinter)
 2. Graphs, stats and data-analysis (statitstics and matplotlib for graphs)
 3. AI and predictive analysis (tensorflow and scikit)
-
 """
 import numpy as np
 import pandas as pd
@@ -30,8 +28,8 @@ root = tk.Tk()
 #root.iconbitmap(r'icon.ico')
 root.geometry("600x500")
 root.resizable(True, True)
-root.title("Stock tracker")
-root.configure(bg = "#a2a2a2")
+root.title("Stock Tracker Portal")
+root.configure(bg = "#282C2F")
 
 class point:
     def __init__(self, colData):
@@ -87,12 +85,24 @@ def searchTicker():
 
 
 # Frames for organization
+instructionFrame = tk.Frame(master = root)
 topFrame = tk.Frame(master = root)
 bodyFrame = tk.Frame(master = root)
 
+# User instructions
+instructions = tk.Label(
+    master = instructionFrame,
+    text = "1. Select timeframe of prices.\n2. Click Submit.\n3. Produce results!",
+    font = 'TkDefault 16',
+    foreground = 'white',
+    background = '#303030'
+    )
+instructions.grid(row=0, column = 0)
+instructionFrame.pack()
+
 # Text box for stock ticker
 fileInput = tk.Entry(master = topFrame, width = 55, bd = 2, justify = "left", font = "TkDefault 10")
-fileInput.grid(row = 0, column = 0)
+fileInput.grid(row = 1, column = 0)
 
 # Drop down box to add time frame
 timeOptions = ["1D", "1W", "1M", "3M", "6M", "1Y", "5Y", "max"]
@@ -100,13 +110,39 @@ optionList = tk.StringVar(topFrame)
 optionList.set(timeOptions[0])
 timePeriod = tk.OptionMenu(topFrame, optionList, *timeOptions)
 timePeriod.config(width = 3, font = "TKDefault 10")
-timePeriod.grid(row = 0, column = 1)
+timePeriod.grid(row = 1, column = 1)
 
 # Button to commence search for data
 fileAccept = tk.Button(master = topFrame, text = "Submit", font = "TkDefault 10", command = searchTicker)
-fileAccept.grid(row = 0, column = 2)
-
+fileAccept.grid(row = 1, column = 2)
 topFrame.pack()
+
+# Immediate Predictions
+result1 = tk.Label(
+    master = bodyFrame,
+    text = "Price is going: [UP/DOWN]\n",
+    font = 'TkDefault 16',
+    foreground = 'white',
+    background = '#303030'
+    )
+result1.grid(row = 2, column = 0)
+result2 = tk.Label(
+    master = bodyFrame,
+    text = "Predicted Price: ",
+    font = 'TkDefault 12',
+    foreground = 'white',
+    background = '#303030'
+    )
+result2.grid(row = 3, column = 0)
+result3 = tk.Label(
+    master = bodyFrame,
+    text = "Percent change from yesterday: ",
+    font = 'TkDefault 12',
+    foreground = 'white',
+    background = '#303030'
+    )
+result3.grid(row = 4, column = 0)
+bodyFrame.pack()
 
 #random data to add to the GUI
 data1 = {'Year': [1993,1994,1995,1996,1997,1998,1999,2000],
@@ -123,7 +159,6 @@ df1 = df1[['Year','Opening_Price']].groupby('Year').sum()
 df1.plot(kind='line', legend=True, ax=ax1, color='r',marker='o', fontsize=10)
 ax1.set_title('Year Vs. Opening_Price')
 
-bodyFrame.pack()
 
 root.mainloop()
 
@@ -212,17 +247,13 @@ def linear_reg(data):
 def graphData(scope):
     x_values = []
     y_values = []
-
     for i in scope:
         x_values.append(i.date)     # open price
         y_values.append(i.open)
-
         x_values.append(i.date)     # close price
         y_values.append(i.close)
-
     pp.plot(x_values, y_values)
     pp.show()
 """
-
 
 
