@@ -197,10 +197,11 @@ def get_data(data):
     data = data[data.columns]
     data_x = (data.copy()).drop("Adj Close", axis = 1)
     data_y = data["Adj Close"]
-    X_train = data_x.iloc[:train_size]
-    X_val = data_x.iloc[val_size:]
-    Y_train =  data_y.iloc[:train_size]
-    Y_val = data_y.iloc[val_size:]
+    #X_train = data_x.iloc[:train_size]
+    #X_val = data_x.iloc[val_size:]
+    #Y_train =  data_y.iloc[:train_size]
+    #Y_val = data_y.iloc[val_size:]
+    X_train, X_val, Y_train, Y_val = train_test_split(data_x, data_y)
     return X_train, X_val, Y_train, Y_val, to_predict, scaler
     
 def model_deep(data, date):
@@ -240,23 +241,28 @@ def model_deep(data, date):
     prediction = scaler.inverse_transform(predict)
     value = prediction[0][5]
     
-    return value, prediction, predict, history_df
+    return value, prediction, history_df
      
+    
     
 def linear_reg(data, date):
     X_train, X_valid, y_train, y_valid, predict, scaler = get_data(data)
     input_shape = [data.shape[1] - 1]
-    model = keras.Sequential([layers.Dense(units=1, input_shape = input_shape)])
+    model = keras.Sequential([
+        layers.BatchNormalization(input_shape=input_shape),
+        layers.Dense(256, activation = "relu"),
+        layers.Dropout(rate=0.3), 
+        layers.BatchNormalization(),
+        layers.Dense(1)])
     model.compile(
     optimizer='adam',
-    loss='mae',
-    metrics=['mae']
+    loss='mae'
     )
     history = model.fit(
     X_train, y_train,
     validation_data=(X_valid, y_valid),
-    batch_size=64,
-    epochs=20,
+    batch_size=128,
+    epochs=40,
     verbose=0,
     )
     
@@ -270,7 +276,10 @@ def linear_reg(data, date):
     prediction = scaler.inverse_transform(predict)
 
     value = prediction[0][5]
+    history_df.loc[:, ['loss', 'val_loss']].plot()
     
-    return value, prediction, predict, history_df
+    return value, prediction, history_df
 
 
+data = pd.read_csv("SPY_max.csv")
+a, b, c = linear_reg(data, "2021-01-16")
