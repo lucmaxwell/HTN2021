@@ -108,13 +108,13 @@ fileAccept.grid(row = 0, column = 2)
 
 topFrame.pack()
 
-#random data to add to the GUI
+# Random data to add to the GUI
 data1 = {'Year': [1993,1994,1995,1996,1997,1998,1999,2000],
          'Opening_Price': [41,42,43,44,45,46,47,48.]
         }  
 df1 = pd.DataFrame(data1,columns=['Year','Opening_Price'])
 
-#adds the graph to the GUI (under the topFrame and bodyFrame)
+# Adds the graph to the GUI (under the topFrame and bodyFrame)
 figure1 = pp.Figure(figsize=(4,4), dpi=100)
 ax1 = figure1.add_subplot(111) # 111 represents how much of the whitespace that the graph fills
 line1 = FigureCanvasTkAgg(figure1, root)
@@ -126,11 +126,6 @@ ax1.set_title('Year Vs. Opening_Price')
 bodyFrame.pack()
 
 root.mainloop()
-
-
-
-
-
 
 
 def some_prep(data):
@@ -156,7 +151,8 @@ def get_data(data):
     Y_train =  data_y.iloc[:train_size]
     Y_val = data_y.iloc[val_size:]
     return X_train, X_val, Y_train, Y_val
-    
+
+
 def model_deep(data):
     # normalize the dataset 
     X_train, X_valid, y_train, y_valid = get_data(data)
@@ -199,30 +195,6 @@ def linear_reg(data):
     return weights
     
 #df['Date'] = pd.to_datetime(df.Date,format='%Y-%m-%d')
-
-
-
-
-
-
-
-"""
-# Temporary place for graphing utility
-# scope is a list of Day
-def graphData(scope):
-    x_values = []
-    y_values = []
-
-    for i in scope:
-        x_values.append(i.date)     # open price
-        y_values.append(i.open)
-
-        x_values.append(i.date)     # close price
-        y_values.append(i.close)
-
-    pp.plot(x_values, y_values)
-    pp.show()
-"""
 
 
 
